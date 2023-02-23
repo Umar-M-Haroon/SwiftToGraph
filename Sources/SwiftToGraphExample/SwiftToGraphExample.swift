@@ -242,6 +242,7 @@ self.removeStuff()
         } catch let err {
             print(err)
         }
+        
  
 //        do {
 //            let graph3 = try SwiftParser().parse(source: source3)

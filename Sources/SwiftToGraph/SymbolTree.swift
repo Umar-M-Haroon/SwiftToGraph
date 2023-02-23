@@ -34,13 +34,12 @@ class Branch: Hashable, Equatable {
     }
 }
 
-extension Branch: CustomDebugStringConvertible {
-    var debugDescription: String {
-        var string = ""
-        for child in children {
-            string.append(child.parserNode.debugDescription)
+extension Branch: CustomStringConvertible {
+    var description: String {
+        if self.parserNode != nil {
+            return self.parserNode.name
         }
-        return string
+        return ""
     }
 }
 //struct SymbolTree {

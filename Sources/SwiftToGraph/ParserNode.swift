@@ -39,6 +39,8 @@ public struct ParserNode: GraphNode {
     }
 }
 
+extension ParserNode: CustomStringConvertible {}
+
 
 //
 //extension Graph {
