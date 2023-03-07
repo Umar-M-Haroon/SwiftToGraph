@@ -28,16 +28,13 @@ public class SwiftParser: SyntaxVisitor {
             let y = arrQueue.removeFirst()
             visited.append(y)
             if y.parserNode != nil {
-                print("visiting", y.parserNode.name)
                 graph.addNode(node: y.parserNode)
                 if let parentNode = y.parent?.parserNode {
-                    print("adding edge between", parentNode.name, y.parserNode.name)
                     graph.addDirectedEdge(u: parentNode.id, v: y.parserNode.id)
                 }
             }
             for child in y.children {
                 if !visited.contains(child) {
-                    print("adding", child.parserNode.name)
                     arrQueue.insert(child, at: 0)
                 }
             }
@@ -50,7 +47,6 @@ public class SwiftParser: SyntaxVisitor {
                 if !graph.nodes.contains(where: {
                     ($0 as? ParserNode)?.type is FunctionDeclSyntax && ($0 as? ParserNode)?.name == parserN.name}
                 ) {
-                    print("removing nodes affiliated with", parserN.name)
                     graph.removeNode(id: parserN.id)
                 }
                 
@@ -93,7 +89,6 @@ public class SwiftParser: SyntaxVisitor {
     /// The function called after visiting `StructDeclSyntax` and its descendents.
     ///   - node: the node we just finished visiting.
     open override func visitPost(_ node: StructDeclSyntax) {
-        print(node.identifier.text)
         current = current.parent ?? current
     }
     /// Visiting `ProtocolDeclSyntax` specifically.

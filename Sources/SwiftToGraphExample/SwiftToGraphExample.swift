@@ -286,7 +286,6 @@ public func configure(b: Int, c: Int) {
                             let params = funcDeclSyntax.signature.input.parameterList.compactMap({$0.firstName?.text}).joined(separator: "")
                             return args == params && called.name == caller.name
                         }) else { return }
-                    graph4.nodes.compactMap({$0 as? ParserNode}).forEach({print($0.description)})
                     graph4.addDirectedEdge(u: caller.id, v: v.id)
 //                    graph4.removeNodeAndMoveEdges(id: caller.id, newV: v.id)
                     graph4.edges = OrderedSet(graph4.edges.map { edge in
