@@ -20,7 +20,13 @@ public struct ParserNode: GraphNode {
     public init(name: String, type: any SyntaxHashable) {
         self.name = name
         self.type = type
-        self.description = name
+        if let n = type as? FunctionDeclSyntax {
+            self.description = name + n.signature.description
+        } else if let node = type as? FunctionCallExprSyntax {
+            self.description = name + node.description
+        } else {
+            self.description = name
+        }
     }
     
     public init(name: String) {
@@ -32,6 +38,7 @@ public struct ParserNode: GraphNode {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
         hasher.combine(name)
+        hasher.combine(type?._syntaxNode)
     }
     
     public static func ==(lhs: ParserNode, rhs: ParserNode) -> Bool {
@@ -42,17 +49,15 @@ public struct ParserNode: GraphNode {
 extension ParserNode: CustomStringConvertible {}
 
 
-//
-//extension Graph {
-//    public func toGraphEditorSite() -> [String] {
-//        self.nodes.flatMap { node in
-//            node.edges.compactMap { edge in
-//                guard let u = self.nodes.first(where: {$0.id == edge.u}) as? ParserNode,
-//                      let v = self.nodes.first(where: {$0.id == edge.v}) as? ParserNode else { return nil }
-//                return "\(u.name) \(v.name)"
-//            }
-//        } + self.nodes.flatMap({ node in
-//            return (node as? ParserNode)?.name
-//        })
-//    }
-//}
+extension Graph {
+    public mutating func removeNodeAndMoveEdges(id: UUID, newV: UUID) {
+        self.edges = OrderedSet(self.edges.map { edge in
+            if edge.v == id {
+                let newEdge = Edge(u: edge.u, v: newV)
+                return newEdge
+            }
+            return edge
+        })
+        removeNode(id: id)
+    }
+}
