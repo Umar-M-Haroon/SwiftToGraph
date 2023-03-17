@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Umar-M-Haroon/GraphKit",
       "state" : {
-        "branch" : "main",
-        "revision" : "005d9318b006647e555415c5aa5f980a9d67df41"
+        "branch" : "concurrency",
+        "revision" : "b9c9e97a59047a565ba3aadc1bc5a42adf37133f"
       }
     },
     {

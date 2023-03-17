@@ -31,13 +31,13 @@ public struct ExampleApp {
         }
         
         """
-//        do {
-//            let graph = try SwiftParser().parse(source: source)
-//            print(graph.toGraphEditorSite())
-//        } catch let err {
-//            print(err)
-//        }
-//
+        do {
+
+//            let result = try parseSource(source: source)
+//            print(result)
+        } catch let err {
+            print(err)
+        }
         let source2 = """
 public struct Node: GraphNode {
     public var id = UUID()
@@ -160,23 +160,12 @@ public struct Graph {
 //    }
 }
 """
-//        do {
-//            var graph2 = try SwiftParser().parse(source: source2)
-//            print(graph2.edges.count)
-//            for n in graph2.nodes {
-//                if let parserN = n as? ParserNode, parserN.type is FunctionCallExprSyntax {
-//                    if !graph2.nodes.contains(where: {
-//                        ($0 as? ParserNode)?.type is FunctionDeclSyntax && ($0 as? ParserNode)?.name == parserN.name}
-//                    ) {
-//                        graph2.removeNode(id: parserN.id)
-//                    }
-//
-//                }
-//            }
-//            graph2.toGraphEditorSite().forEach({print("\($0)\n")})
-//        } catch let err {
-//            print(err)
-//        }
+        do {
+//            let result = try parseSource(source: source2)
+//            print(result)
+        } catch let err {
+            print(err)
+        }
         
         let source3 = """
 public struct LiveScore: Codable, Equatable {
@@ -229,30 +218,12 @@ self.removeStuff()
 }
 """
         
-//        do {
-//            var graph3 = try SwiftParser().parse(source: source3)
-//
-////            graph3.toGraphEditorSite().forEach({print("\($0)\n")})
-//            let views = graph3.nodes.flatMap({NodeView(node: $0, attributes: [])})
-//            let highlightedEdges: OrderedSet<Edge> = OrderedSet(graph3.edges.filter { edge in
-//                guard let uNode = graph3[edge.u] as? ParserNode,
-//                      let vNode = graph3[edge.v] as? ParserNode else { return false }
-//                return uNode.type is FunctionCallExprSyntax && vNode.type is FunctionDeclSyntax ||  vNode.type is FunctionCallExprSyntax && uNode.type is FunctionDeclSyntax
-//            })
-//            let graphEdges = graph3.edges.subtracting(highlightedEdges)
-//
-//            let edges = graphEdges.flatMap({EdgeView(edge: $0, attributes: [], uDescription: graph3[$0.u].description, vDescription: graph3[$0.v].description)})
-//            let highlightedEdgeViews = highlightedEdges.flatMap {
-//                EdgeView(edge: $0, attributes: [.init(key: EdgeAttributeKey.color, value: "pink"), .init(key: EdgeAttributeKey.label, value: "calls")], uDescription: graph3[$0.u].description, vDescription: graph3[$0.v].description)
-//            }
-//            let allViews: [any View] = views + edges + highlightedEdgeViews
-//            let graphView = GraphView {
-//                allViews
-//            }
-////            print(graphView.build().joined(separator: "\n"))
-//        } catch let err {
-//            print(err)
-//        }
+        do {
+//            let result = try parseSource(source: source3)
+//            print(result)
+        } catch let err {
+            print(err)
+        }
         
  
         let source4 = """
@@ -268,76 +239,82 @@ public func configure(b: Int, c: Int) {
 """
         
         do {
-            var graph4 = try SwiftParser().parse(source: source4)
-            
-            //            graph3.toGraphEditorSite().forEach({print("\($0)\n")})
-            var highlightedEdges: OrderedSet<Edge> = []
-            graph4.nodes
-                .compactMap({$0 as? ParserNode})
-                .filter({$0.type is FunctionCallExprSyntax})
-                .forEach { caller in
-                    guard let funcCallSyntax = caller.type as? FunctionCallExprSyntax else { return }
-                    let args = funcCallSyntax.argumentList.compactMap({$0.label?.description}).joined(separator: "")
-                    guard let v = graph4.nodes
-                        .compactMap({$0 as? ParserNode})
-                        .filter({$0.type is FunctionDeclSyntax})
-                        .first(where: { called in
-                            guard let funcDeclSyntax = called.type as? FunctionDeclSyntax else { return false }
-                            let params = funcDeclSyntax.signature.input.parameterList.compactMap({$0.firstName?.text}).joined(separator: "")
-                            return args == params && called.name == caller.name
-                        }) else { return }
-                    graph4.addDirectedEdge(u: caller.id, v: v.id)
-//                    graph4.removeNodeAndMoveEdges(id: caller.id, newV: v.id)
-                    graph4.edges = OrderedSet(graph4.edges.map { edge in
-                        if edge.v == caller.id {
-                            let newEdge = Edge(u: edge.u, v: v.id)
-                            highlightedEdges.append(newEdge)
-                            return newEdge
-                        }
-                        return edge
-                    })
-                    graph4.removeNode(id: caller.id)
-                }
-            let graphEdges = graph4.edges.subtracting(highlightedEdges)
-            let views = graph4.nodes.flatMap({NodeView(node: $0, attributes: [])})
-            
-            let edges = graphEdges.map({EdgeView(edge: $0, attributes: [], uDescription: graph4[$0.u].description, vDescription: graph4[$0.v].description)})
-            let highlightedEdgeViews = highlightedEdges.map {
-                EdgeView(edge: $0, attributes: [.init(key: EdgeAttributeKey.color, value: "pink"), .init(key: EdgeAttributeKey.label, value: "calls")], uDescription: graph4[$0.u].description, vDescription: graph4[$0.v].description)
-            }
-            let allViews: [any View] = views + edges + highlightedEdgeViews
-            let graphView = GraphView {
-                allViews
-            }
-            print(graphView.build().joined(separator: "\n"))
+//            let result = try parseSource(source: source4)
+//            print(result)
         } catch let err {
             print(err)
         }
-//        do {
-//            let graph3 = try SwiftParser().parse(source: source3)
-//            graph3.toGraphEditorSite().forEach({print("\($0)\n")})
-//        } catch let err {
-//            print(err)
-//        }
-//
-//        let symbols = try SymbolParser.parse(source: source)
-//            .flattened()
-//            .compactMap { $0 as? InheritingSymbol }
-//
-//        dump(symbols)
-//
-//        let path = "~/Repositories/myProject" as NSString
-//        let directoryURL = URL(fileURLWithPath: path.expandingTildeInPath)
-//
-//        let allSymbols = try FileManager.default
-//            .enumerator(at: directoryURL, includingPropertiesForKeys: nil)?
-//            .compactMap { $0 as? URL }
-//            .filter { $0.hasDirectoryPath == false }
-//            .filter { $0.pathExtension == "swift" }
-//            .flatMap { try SymbolParser.parse(source: String(contentsOf: $0)) }
-//
-//        dump(allSymbols)
         
+        let source5 = """
+public struct ConfigurationManager: Codable, Equatable {
+    class func getPolicy() -> PolicyMessage {
+        guard let policyRemoteConfig: PolicyMessage = ConfigurationManager.getRemoteConfigValues(for: .policyLinks)
+        else {
+            return PolicyMessage(policies: [PolicyLink(title: "", link: "", order: 0)])
+
+        }
+        return policyRemoteConfig
+    }
+}
+public struct TestB {
+public func configure(b: Int, c: Int) {
+    let onboardPolicies = ConfigurationManager.getPolicy().filter(with: [NSLocalizedString("Privacy Policy", comment: "Privacy Policy"), NSLocalizedString("Terms & Conditions", comment: "Terms & Conditions")])
+}
+}
+"""
+        
+        do {
+            let result = try parseSource(source: source5)
+            print(result)
+        } catch let err {
+            print(err)
+        }
+        
+    }
+    
+    static func parseSource(source: String) throws -> String {
+        var graph = try SwiftParser().parse(source: source)
+        
+        //            graph3.toGraphEditorSite().forEach({print("\($0)\n")})
+        var highlightedEdges: OrderedSet<Edge> = []
+        graph.nodes
+            .compactMap({$0 as? ParserNode})
+            .filter({$0.type is FunctionCallExprSyntax})
+            .forEach { caller in
+                guard let funcCallSyntax = caller.type as? FunctionCallExprSyntax else { return }
+                let args = funcCallSyntax.argumentList.compactMap({$0.label?.description}).joined(separator: "")
+                guard let v = graph.nodes
+                    .compactMap({$0 as? ParserNode})
+                    .filter({$0.type is FunctionDeclSyntax})
+                    .first(where: { called in
+                        guard let funcDeclSyntax = called.type as? FunctionDeclSyntax else { return false }
+                        let params = funcDeclSyntax.signature.input.parameterList.compactMap({$0.firstName?.text}).joined(separator: "")
+                        return args == params && called.name == caller.name
+                    }) else { return }
+                graph.addDirectedEdge(u: caller.id, v: v.id)
+                //                    graph.removeNodeAndMoveEdges(id: caller.id, newV: v.id)
+                graph.edges = OrderedSet(graph.edges.map { edge in
+                    if edge.v == caller.id {
+                        let newEdge = Edge(u: edge.u, v: v.id)
+                        highlightedEdges.append(newEdge)
+                        return newEdge
+                    }
+                    return edge
+                })
+                graph.removeNode(id: caller.id)
+            }
+        let graphEdges = graph.edges.subtracting(highlightedEdges)
+        let views = graph.nodes.flatMap({NodeView(node: $0, attributes: [])})
+        
+        let edges = graphEdges.map({EdgeView(edge: $0, attributes: [], uDescription: graph[$0.u].description, vDescription: graph[$0.v].description)})
+        let highlightedEdgeViews = highlightedEdges.map {
+            EdgeView(edge: $0, attributes: [.init(key: EdgeAttributeKey.color, value: "pink"), .init(key: EdgeAttributeKey.label, value: "calls")], uDescription: graph[$0.u].description, vDescription: graph[$0.v].description)
+        }
+        let allViews: [any DOTView] = views + edges + highlightedEdgeViews
+        let graphView = GraphView {
+            allViews
+        }
+        return graphView.build().joined(separator: "\n")
     }
 }
 
