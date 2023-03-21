@@ -8,11 +8,8 @@
 import Foundation
 import GraphKit
 public actor ParserManager {
-    public init() {
-        
-    }
-    public func parseString(string: String) async throws -> Graph {
-        let parser = SwiftParser()
-        return try parser.parse(source: string)
+    public init() {}
+    public func parse(source: String) throws -> Graph {
+        try Swiftie(viewMode: .all).parse(source: source)
     }
 }

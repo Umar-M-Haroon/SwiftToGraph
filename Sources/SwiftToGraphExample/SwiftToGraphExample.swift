@@ -43,7 +43,7 @@ public struct ExampleApp {
     }
     
     static func parseSource(source: String) async throws -> String {
-        var graph = try await SwiftParser().parse(source: source)
+        var graph = try await ParserManager().parse(source: source)
         
 //                    graph3.toGraphEditorSite().forEach({print("\($0)\n")})
         var highlightedEdges: OrderedSet<Edge> = []

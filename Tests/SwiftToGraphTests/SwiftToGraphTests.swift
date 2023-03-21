@@ -97,7 +97,7 @@ self.removeStuff()
                 try? String(contentsOf: file)
             })
             .reduce("", +)
-        let g = try await manager.parseString(string: combined)
+        let g = try await manager.parse(source: combined)
 //        let g = try manager.parse(source: combined)
         print(g.nodes.count)
         

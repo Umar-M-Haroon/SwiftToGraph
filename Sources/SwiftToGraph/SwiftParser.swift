@@ -7,10 +7,11 @@
 
 import Foundation
 import SwiftSyntax
-import SwiftSyntaxParser
+import SwiftParser
 import GraphKit
 import Collections
-public class SwiftParser: SyntaxVisitor {
+
+public class Swiftie: SyntaxVisitor {
     private var tree: Tree = Tree()
     
     func removeSystemFunctions(graph: Graph) {
@@ -28,7 +29,7 @@ public class SwiftParser: SyntaxVisitor {
     }
     
     public func parse(source: String) throws -> Graph {
-        walk(try SyntaxParser.parse(source: source))
+        walk(Parser.parse(source: source))
         tree.convertTreeToGraph()
         return tree.graph
 //        removeSystemFunctions()

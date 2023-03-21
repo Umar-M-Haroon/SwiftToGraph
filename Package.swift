@@ -18,7 +18,7 @@ let package = Package(
     dependencies: [
         // Dependencies declare other packages that this package depends on.
 //        .package(url: "https://github.com/apple/swift-syntax.git", branch: "0.50700.1")
-        .package(url: "https://github.com/apple/swift-syntax.git", branch: "0.50700.1"),
+        .package(url: "https://github.com/apple/swift-syntax.git", branch: "main"),
         .package(url: "https://github.com/Umar-M-Haroon/GraphKit", branch: "concurrency"),
         .package(url: "https://github.com/apple/swift-collections.git", .upToNextMinor(from: "1.0.4")),
     ],
