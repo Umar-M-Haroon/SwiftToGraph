@@ -305,7 +305,7 @@ public func configure(b: Int, c: Int) {
             let highlightedEdgeViews = highlightedEdges.map {
                 EdgeView(edge: $0, attributes: [.init(key: EdgeAttributeKey.color, value: "pink"), .init(key: EdgeAttributeKey.label, value: "calls")], uDescription: graph4[$0.u].description, vDescription: graph4[$0.v].description)
             }
-            let allViews: [any View] = views + edges + highlightedEdgeViews
+            let allViews: [any DOTView] = views + edges + highlightedEdgeViews
             let graphView = GraphView {
                 allViews
             }
