@@ -11,37 +11,10 @@ import SwiftSyntaxParser
 import GraphKit
 import Collections
 public class SwiftParser: SyntaxVisitor {
-    var graph: Graph = Graph(numberOfNodes: 0)
-//    private var tree: SymbolTree = SymbolTree()
-    public override init() {
-        root = Branch()
-        current = root
-    }
-    var root: Branch
-    var current: Branch
-    func convertTreeToGraph(branch: Branch) {
-        var arrQueue: [Branch] = []
-        var visited: OrderedSet<Branch> = []
-        arrQueue.append(branch)
-        visited.append(branch)
-        while !arrQueue.isEmpty {
-            let y = arrQueue.removeFirst()
-            visited.append(y)
-            if y.parserNode != nil {
-                graph.addNode(node: y.parserNode)
-                if let parentNode = y.parent?.parserNode {
-                    graph.addDirectedEdge(u: parentNode.id, v: y.parserNode.id)
-                }
-            }
-            for child in y.children {
-                if !visited.contains(child) {
-                    arrQueue.insert(child, at: 0)
-                }
-            }
-        }
-    }
+    private var tree: Tree = Tree()
     
-    func removeSystemFunctions() {
+    func removeSystemFunctions(graph: Graph) {
+        var graph = graph
         for n in graph.nodes {
             if let parserN = n as? ParserNode, parserN.type is FunctionCallExprSyntax {
                 if !graph.nodes.contains(where: {
@@ -56,40 +29,34 @@ public class SwiftParser: SyntaxVisitor {
     
     public func parse(source: String) throws -> Graph {
         walk(try SyntaxParser.parse(source: source))
-        convertTreeToGraph(branch: root)
-        removeSystemFunctions()
-        return graph
+        tree.convertTreeToGraph()
+        return tree.graph
+//        removeSystemFunctions()
     }
 
     /// Visiting `ClassDeclSyntax` specifically.
     ///   - Parameter node: the node we are visiting.
     ///   - Returns: how should we continue visiting.
     open override func visit(_ node: ClassDeclSyntax) -> SyntaxVisitorContinueKind {
-        let new = Branch(parserNode: ParserNode(name: node.identifier.text, type: node.self))
-        current.addChild(new)
-        current = new
-        return .visitChildren
+        tree.visit(node)
     }
     
     /// The function called after visiting `ClassDeclSyntax` and its descendents.
     ///   - node: the node we just finished visiting.
     open override func visitPost(_ node: ClassDeclSyntax) {
-        current = current.parent ?? current
+        tree.visitPost()
     }
     /// Visiting `StructDeclSyntax` specifically.
     ///   - Parameter node: the node we are visiting.
     ///   - Returns: how should we continue visiting.
     open override func visit(_ node: StructDeclSyntax) -> SyntaxVisitorContinueKind {
-        let node = Branch(parserNode: ParserNode(name: node.identifier.text, type: node.self))
-        current.addChild(node)
-        current = node
-        return .visitChildren
+        tree.visit(node)
     }
     
     /// The function called after visiting `StructDeclSyntax` and its descendents.
     ///   - node: the node we just finished visiting.
     open override func visitPost(_ node: StructDeclSyntax) {
-        current = current.parent ?? current
+        tree.visitPost()
     }
     /// Visiting `ProtocolDeclSyntax` specifically.
     ///   - Parameter node: the node we are visiting.
@@ -117,17 +84,12 @@ public class SwiftParser: SyntaxVisitor {
     ///   - Parameter node: the node we are visiting.
     ///   - Returns: how should we continue visiting.
     open override func visit(_ node: FunctionDeclSyntax) -> SyntaxVisitorContinueKind {
-        let node = Branch(parserNode: ParserNode(name: node.identifier.text, type: node.self))
-        current.addChild(node)
-        current = node
-        return .visitChildren
+        tree.visit(node)
     }
     /// The function called after visiting `FunctionDeclSyntax` and its descendents.
     ///   - node: the node we just finished visiting.
     open override func visitPost(_ node: FunctionDeclSyntax) {
-        if current.parent?.parserNode != nil {
-            current = current.parent ?? current
-        }
+        tree.visitIfPossible()
     }
     /// Visiting `InitializerDeclSyntax` specifically.
     ///   - Parameter node: the node we are visiting.
@@ -166,20 +128,13 @@ public class SwiftParser: SyntaxVisitor {
     ///   - Parameter node: the node we are visiting.
     ///   - Returns: how should we continue visiting.
     open override func visit(_ node: FunctionCallExprSyntax) -> SyntaxVisitorContinueKind {
-        guard let funcCall = node.calledExpression.as(MemberAccessExprSyntax.self)?.name.text else { return .visitChildren }
-        let node = Branch(parserNode: ParserNode(name: funcCall, type: node.self))
-        current.addChild(node)
-        current = node
-        return .visitChildren
+        tree.visit(node)
     }
     
     /// The function called after visiting `FunctionCallExprSyntax` and its descendents.
     ///   - node: the node we just finished visiting.
     open override func visitPost(_ node: FunctionCallExprSyntax) {
-//        current = current.parent ?? current
-        if current.parent?.parserNode != nil {
-            current = current.parent ?? current
-        }
+        tree.visitIfPossible()
     }
     
 }
