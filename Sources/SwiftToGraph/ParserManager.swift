@@ -10,6 +10,6 @@ import GraphKit
 public actor ParserManager {
     public init() {}
     public func parse(source: String) throws -> Graph {
-        try Swiftie(viewMode: .all).parse(source: source)
+        try SwiftParser(viewMode: .all).parse(source: source)
     }
 }

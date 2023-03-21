@@ -11,7 +11,7 @@ import SwiftParser
 import GraphKit
 import Collections
 
-public class Swiftie: SyntaxVisitor {
+public class SwiftParser: SyntaxVisitor {
     private var tree: Tree = Tree()
     
     func removeSystemFunctions(graph: Graph) {
