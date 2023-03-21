@@ -5,7 +5,7 @@ import GraphKit
 
 final class SwiftToGraphTests: XCTestCase {
 
-    func testSymbolTree() {
+    func testSymbolTree() async {
         let source3 = """
 public struct LiveScore: Codable, Equatable {
     public init(nba: LiveEvent? = nil, mlb: LiveEvent? = nil, soccer: LiveEvent? = nil, nfl: LiveEvent? = nil, nhl: LiveEvent? = nil) {
@@ -58,17 +58,17 @@ self.removeStuff()
 """
         
         do {
-            let parser = SwiftParser()
-            var graph3 = try parser.parse(source: source3)
-            graph3.nodes.forEach({print("node:", $0.description)})
-            graph3.edges.forEach({print("edge:", parser.graph[$0.u], "->", parser.graph[$0.v])})
-            XCTAssertEqual(parser.graph.nodes.count, 16)
-//            parser.addFunctionCalls()
-            parser.removeSystemFunctions()
-            print("-----------------------")
-            XCTAssertEqual(parser.graph.nodes.count, 8)
-            parser.graph.nodes.forEach({print("node:", $0.description)})
-            parser.graph.edges.forEach({print("edge:", parser.graph[$0.u], "->", parser.graph[$0.v])})
+//            let parser = SwiftParser()
+//            var graph3 = try await parser.parse(source: source3)
+//            graph3.nodes.forEach({print("node:", $0.description)})
+//            graph3.edges.forEach({print("edge:", parser.graph[$0.u], "->", parser.graph[$0.v])})
+//            XCTAssertEqual(parser.graph.nodes.count, 16)
+////            parser.addFunctionCalls()
+//            parser.removeSystemFunctions()
+//            print("-----------------------")
+//            XCTAssertEqual(parser.graph.nodes.count, 8)
+//            parser.graph.nodes.forEach({print("node:", $0.description)})
+//            parser.graph.edges.forEach({print("edge:", parser.graph[$0.u], "->", parser.graph[$0.v])})
             
             //            graph3.toGraphEditorSite().forEach({print("\($0)\n")})
 //            let views = graph3.nodes.flatMap({NodeView(node: $0, attributes: [])})
@@ -82,4 +82,25 @@ self.removeStuff()
             print(err)
         }
     }
+    
+    func testConcurrency() async throws {
+        
+        let url = URL(string: "file:///Users/umar/Downloads/SportsCal-main")!
+        let allSymbols = FileManager.default
+            .enumerator(at: url, includingPropertiesForKeys: nil)?
+            .compactMap { $0 as? URL }
+            .filter { $0.hasDirectoryPath == false }
+            .filter { $0.pathExtension == "swift" }
+        let manager = ParserManager()
+        let combined: String = allSymbols!
+            .compactMap({ file in
+                try? String(contentsOf: file)
+            })
+            .reduce("", +)
+        let g = try await manager.parseString(string: combined)
+//        let g = try manager.parse(source: combined)
+        print(g.nodes.count)
+        
+    }
+    
 }

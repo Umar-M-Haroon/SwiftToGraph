@@ -11,7 +11,7 @@ public actor ParserManager {
     public init() {
         
     }
-    public func parseString(string: String) throws -> Graph {
+    public func parseString(string: String) async throws -> Graph {
         let parser = SwiftParser()
         return try parser.parse(source: string)
     }
